@@ -2,7 +2,6 @@
 using api.Data.Models;
 using api.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace api.Tests;
 
