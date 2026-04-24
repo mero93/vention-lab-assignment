@@ -2,23 +2,34 @@
 using api.Data.Models;
 using api.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace api.Tests;
 
 public class ProductRepositoryTests : IDisposable
 {
+    // Actual objects
     private readonly AppDbContext _context;
     private readonly ProductRepository _repository;
+
+    // Mock objects
+    private readonly AppDbContext _mockContext;
+    private readonly ProductRepository _mockRepository;
+
     private bool _disposed;
 
     public ProductRepositoryTests()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "testDb")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         _context = new AppDbContext(options);
         _repository = new ProductRepository(_context);
+
+        _mockContext = Substitute.ForPartsOf<AppDbContext>(options);
+        _mockContext.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(0);
+        _mockRepository = new ProductRepository(_mockContext);
     }
 
     [Fact]
@@ -36,11 +47,24 @@ public class ProductRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task AddProductAsync_ShouldThrowInvalidOperationException()
+    {
+        var product = new ProductModel { Title = "Test", Image = "test" };
+
+        await _mockRepository
+            .Invoking(r => r.AddProductAsync(product))
+            .Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Failed to save product to the database");
+    }
+
+    [Fact]
     public async Task GetProductsAsync_ShouldReturnProductsListAndTotalLength()
     {
         var products = Enumerable
             .Range(1, 15)
-            .Select(i => new ProductModel { Title = $"Product {i}", Image = $"Image {i}" });
+            .Select(i => new ProductModel { Title = $"Product {i}", Image = $"Image {i}" })
+            .ToList();
 
         _context.Products.AddRange(products);
         await _context.SaveChangesAsync();

@@ -1,24 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Data.Repositories
 {
-    public class ProductRepository(AppDbContext database) : IProductRepository
+    public class ProductRepository(AppDbContext context) : IProductRepository
     {
-        public Task<ProductModel> AddProductAsync(ProductModel data)
+        private readonly AppDbContext _context = context;
+
+        public async Task<ProductModel> AddProductAsync(ProductModel data)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(data);
+
+            var result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                return data;
+            }
+
+            throw new InvalidOperationException("Failed to save product to the database");
         }
 
-        public Task<(List<ProductModel> products, int totalLength)> GetProductsAsync(
+        public async Task<(List<ProductModel> products, int totalLength)> GetProductsAsync(
             int take,
             int skip
         )
         {
-            throw new NotImplementedException();
+            var query = _context.Products;
+
+            var count = await query.CountAsync();
+
+            var products = await query.Skip(skip).Take(take).ToListAsync();
+
+            return (products, count);
         }
     }
 }
