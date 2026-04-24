@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data.DTOs;
+using api.Data.Models;
 using api.Data.Repositories;
 using AutoMapper;
 
@@ -13,16 +14,28 @@ namespace api.Data.Services
         private readonly IProductRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
 
-        public Task<ProductDto> CreateProductASync(ProductCreateDto data)
+        public async Task<ProductDto> CreateProductASync(ProductCreateDto data)
         {
-            throw new NotImplementedException();
+            var result = await _repository.AddProductAsync(_mapper.Map<ProductModel>(data));
+
+            return _mapper.Map<ProductDto>(result);
         }
 
-        public Task<PaginatedResult<ProductDto>> GetPaginatedProductsASync(
+        public async Task<PaginatedResult<ProductDto>> GetPaginatedProductsASync(
             PaginationParams paginationParams
         )
         {
-            throw new NotImplementedException();
+            var (list, totalLength) = await _repository.GetProductsAsync(
+                paginationParams.Take,
+                paginationParams.Skip
+            );
+
+            return new PaginatedResult<ProductDto>(
+                _mapper.Map<List<ProductDto>>(list),
+                totalLength,
+                paginationParams.PageNumber,
+                paginationParams.PageSize
+            );
         }
     }
 }
