@@ -60,7 +60,10 @@ namespace api.Tests
 
             image.Width.Should().BeLessThanOrEqualTo(800);
             image.Height.Should().BeLessThanOrEqualTo(800);
-            image.Metadata.DecodedImageFormat?.Name.Should().Be("WebP");
+            image
+                .Metadata.DecodedImageFormat?.Name.ToLowerInvariant()
+                .Should()
+                .BeEquivalentTo("webp");
         }
 
         public void Dispose()

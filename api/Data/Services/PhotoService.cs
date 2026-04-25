@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace api.Data.Services
 {
@@ -9,9 +11,29 @@ namespace api.Data.Services
     {
         private readonly IWebHostEnvironment _environment = environment;
 
-        public Task<string> UploadImage(IFormFile image)
+        public async Task<string> UploadImage(IFormFile file)
         {
-            throw new NotImplementedException();
+            var root = _environment.WebRootPath;
+
+            var uploads = Path.Combine(root, "uploads");
+
+            if (!Directory.Exists(uploads))
+            {
+                Directory.CreateDirectory(uploads);
+            }
+
+            var fileName = $"{Guid.NewGuid()}.webp";
+            var fullPath = Path.Combine(uploads, fileName);
+
+            using var image = await Image.LoadAsync(file.OpenReadStream());
+
+            image.Mutate(x =>
+                x.Resize(new ResizeOptions { Size = new Size(800, 800), Mode = ResizeMode.Max })
+            );
+
+            await image.SaveAsWebpAsync(fullPath);
+
+            return fileName;
         }
     }
 }
