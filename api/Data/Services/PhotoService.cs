@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using api.Errors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -25,15 +27,22 @@ namespace api.Data.Services
             var fileName = $"{Guid.NewGuid()}.webp";
             var fullPath = Path.Combine(uploads, fileName);
 
-            using var image = await Image.LoadAsync(file.OpenReadStream());
+            try
+            {
+                using var image = await Image.LoadAsync(file.OpenReadStream());
 
-            image.Mutate(x =>
-                x.Resize(new ResizeOptions { Size = new Size(800, 800), Mode = ResizeMode.Max })
-            );
+                image.Mutate(x =>
+                    x.Resize(new ResizeOptions { Size = new Size(800, 800), Mode = ResizeMode.Max })
+                );
 
-            await image.SaveAsWebpAsync(fullPath);
+                await image.SaveAsWebpAsync(fullPath);
 
-            return fileName;
+                return fileName;
+            }
+            catch (UnknownImageFormatException ex)
+            {
+                throw new CustomException("Unknown image format", HttpStatusCode.BadRequest);
+            }
         }
     }
 }

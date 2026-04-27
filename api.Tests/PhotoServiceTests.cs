@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using api.Data.Services;
+using api.Errors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using NSubstitute.ExceptionExtensions;
 using SixLabors.ImageSharp;
 using Xunit;
 
@@ -64,6 +67,31 @@ namespace api.Tests
                 .Metadata.DecodedImageFormat?.Name.ToLowerInvariant()
                 .Should()
                 .BeEquivalentTo("webp");
+        }
+
+        [Fact]
+        public async Task UploadImage_ShouldCatchAnError()
+        {
+            var sourcePath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Resources",
+                "PhotoService",
+                "fail.webp"
+            );
+
+            using var fileStream = File.OpenRead(sourcePath);
+            var formFile = new FormFile(fileStream, 0, fileStream.Length, "image", "fail.webp")
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = GetContentType("fail.webp"),
+            };
+
+            var exception = await Assert.ThrowsAsync<CustomException>(() =>
+                _service.UploadImage(formFile)
+            );
+
+            exception.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            exception.Message.Should().Contain("Unknown image format");
         }
 
         public void Dispose()
