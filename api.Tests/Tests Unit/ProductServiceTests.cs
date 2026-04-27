@@ -48,7 +48,7 @@ namespace api.Tests
             _repo.AddProductAsync(model).Returns(savedModel);
             _mapper.Map<ProductDto>(savedModel).Returns(expectedDto);
 
-            var result = await _service.CreateProductASync(dto);
+            var result = await _service.CreateProductAsync(dto);
 
             Received.InOrder(() =>
             {
@@ -72,7 +72,7 @@ namespace api.Tests
             _repo.AddProductAsync(Arg.Any<ProductModel>()).Throws(new InvalidOperationException());
 
             await _service
-                .Invoking(s => s.CreateProductASync(dto))
+                .Invoking(s => s.CreateProductAsync(dto))
                 .Should()
                 .ThrowAsync<InvalidOperationException>();
         }
@@ -89,7 +89,7 @@ namespace api.Tests
                 .Returns((products, 25));
             _mapper.Map<List<ProductDto>>(products).Returns(dtos);
 
-            var result = await _service.GetPaginatedProductsASync(paginationParams);
+            var result = await _service.GetPaginatedProductsAsync(paginationParams);
 
             Assert.Equal(25, result.TotalCount);
             Assert.Equal(3, result.TotalPages);

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using api.Errors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -39,7 +35,7 @@ namespace api.Data.Services
 
                 return fileName;
             }
-            catch (UnknownImageFormatException ex)
+            catch (UnknownImageFormatException)
             {
                 throw new CustomException("Unknown image format", HttpStatusCode.BadRequest);
             }

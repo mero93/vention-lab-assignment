@@ -1,28 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Serilog;
 
 namespace api.Extensions
 {
     public static class LoggingConfiguration
     {
-        public static void AddLoggerConfiguration(this ConfigureHostBuilder builder)
+        public static void AddLoggerConfiguration(this IHostBuilder host)
         {
-            builder.UseSerilog(
+            host.UseSerilog(
                 (context, services, configuration) =>
                 {
                     configuration
                         .ReadFrom.Configuration(context.Configuration)
-                        .ReadFrom.Services(services)
-                        .Enrich.FromLogContext()
-                        .WriteTo.Console()
-                        .WriteTo.File(
-                            "logs/log-.txt",
-                            rollingInterval: RollingInterval.Day,
-                            retainedFileCountLimit: 7
-                        );
+                        .ReadFrom.Services(services);
                 }
             );
         }

@@ -15,8 +15,6 @@ public class ProductRepositoryTests : IDisposable
     private readonly AppDbContext _mockContext;
     private readonly ProductRepository _mockRepository;
 
-    private bool _disposed;
-
     public ProductRepositoryTests()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -72,33 +70,15 @@ public class ProductRepositoryTests : IDisposable
 
         returnedProducts.Should().HaveCount(5);
         totalCount.Should().Be(15);
-        returnedProducts.First().Id.Should().Be(6);
-        returnedProducts.First().Title.Should().Be("Product 6");
-        returnedProducts.Last().Id.Should().Be(10);
-        returnedProducts.Last().Title.Should().Be("Product 10");
+        returnedProducts[0].Id.Should().Be(6);
+        returnedProducts[0].Title.Should().Be("Product 6");
+        returnedProducts[^1].Id.Should().Be(10);
+        returnedProducts[^1].Title.Should().Be("Product 10");
     }
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-            return;
-
-        if (disposing)
-        {
-            _context?.Dispose();
-        }
-
-        _disposed = true;
-    }
-
-    ~ProductRepositoryTests()
-    {
-        Dispose(false);
+        _context?.Dispose();
+        _mockContext?.Dispose();
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Data.DTOs;
 using api.Data.Models;
 using api.Data.Repositories;
@@ -14,14 +10,14 @@ namespace api.Data.Services
         private readonly IProductRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<ProductDto> CreateProductASync(ProductCreateDto data)
+        public async Task<ProductDto> CreateProductAsync(ProductCreateDto data)
         {
             var result = await _repository.AddProductAsync(_mapper.Map<ProductModel>(data));
 
             return _mapper.Map<ProductDto>(result);
         }
 
-        public async Task<PaginatedResult<ProductDto>> GetPaginatedProductsASync(
+        public async Task<PaginatedResult<ProductDto>> GetPaginatedProductsAsync(
             PaginationParams paginationParams
         )
         {

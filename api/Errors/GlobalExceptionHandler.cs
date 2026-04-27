@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using api.Data.Responses;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace api.Errors
 {
@@ -43,6 +39,10 @@ namespace api.Errors
                     (int)customException.StatusCode,
                     customException.Message
                 ),
+                FluentValidation.ValidationException validationException => (
+                    (int)HttpStatusCode.BadRequest,
+                    validationException.Message
+                ),
                 _ => (
                     (int)HttpStatusCode.InternalServerError,
                     "An unexpected server error occurred."
@@ -59,7 +59,7 @@ namespace api.Errors
                 _environment.IsDevelopment() ? exception.ToString() : null
             );
 
-            var response = ApiResponse<object>.Failure(errorResponse, statusCode);
+            var response = new ApiResponse<object>(statusCode, null, errorResponse);
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }

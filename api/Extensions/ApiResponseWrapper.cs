@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Data.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -19,13 +15,29 @@ namespace api.Extensions
                 if (
                     statusCode >= 400
                     || statusCode == StatusCodes.Status204NoContent
-                    || objectResult.Value is ApiResponse<object>
+                    || objectResult.Value is null
+                    || (
+                        objectResult.Value.GetType().IsGenericType
+                        && objectResult.Value.GetType().GetGenericTypeDefinition()
+                            == typeof(ApiResponse<>)
+                    )
                 )
                 {
                     return;
                 }
 
-                objectResult.Value = ApiResponse<object>.Success(objectResult.Value, statusCode);
+                var valueType = objectResult.Value.GetType();
+
+                var genericType = typeof(ApiResponse<>).MakeGenericType(valueType);
+
+                var wrappedResult = Activator.CreateInstance(
+                    genericType,
+                    statusCode,
+                    objectResult.Value,
+                    null
+                );
+
+                objectResult.Value = wrappedResult;
             }
         }
 
