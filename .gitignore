@@ -1,0 +1,11 @@
+# --- Node.js / Next.js ---
+node_modules/
+.next/
+out/
+build/
+.env*.local
+.DS_Store
+
+# --- OS Specific ---
+Thumbs.db
+desktop.ini

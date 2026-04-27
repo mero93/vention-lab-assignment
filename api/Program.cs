@@ -30,6 +30,14 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ApiResponseWrapper>();
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -46,6 +54,8 @@ builder.Host.AddLoggerConfiguration();
 
 var app = builder.Build();
 
+app.UseCors();
+
 app.UseMiddleware<GlobalExceptionHandler>();
 
 if (app.Environment.IsDevelopment())
@@ -55,7 +65,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

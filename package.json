@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "dev:api": "dotnet watch run --project api/api.csproj",
+    "dev:client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:client\""
+  },
+  "name": "vention-lab-assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mero93/vention-lab-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mero93/vention-lab-assignment/issues"
+  },
+  "homepage": "https://github.com/mero93/vention-lab-assignment#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
