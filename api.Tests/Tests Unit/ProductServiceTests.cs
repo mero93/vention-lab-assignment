@@ -3,6 +3,7 @@ using api.Data.Models;
 using api.Data.Repositories;
 using api.Data.Services;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 using NSubstitute.ExceptionExtensions;
 
 namespace api.Tests
@@ -12,13 +13,15 @@ namespace api.Tests
         private readonly IProductRepository _repo;
         private readonly IMapper _mapper;
         private readonly ProductService _service;
+        private readonly IMemoryCache _cache;
 
         public ProductServiceTests()
         {
             _repo = Substitute.For<IProductRepository>();
             _mapper = Substitute.For<IMapper>();
+            _cache = Substitute.For<IMemoryCache>();
 
-            _service = new ProductService(_repo, _mapper);
+            _service = new ProductService(_repo, _mapper, _cache);
         }
 
         [Fact]
@@ -91,6 +94,69 @@ namespace api.Tests
             Assert.Equal(2, result.PageNumber);
             Assert.NotNull(result.Items);
             await _repo.Received(1).GetProductsAsync(10, 10);
+        }
+
+        [Fact]
+        public async Task GetPaginatedProductsAsync_CachingWorks()
+        {
+            var realCache = new MemoryCache(new MemoryCacheOptions());
+            var serviceWithRealCache = new ProductService(_repo, _mapper, realCache);
+
+            var queryParams = new QueryParams { PageNumber = 1, PageSize = 5 };
+            var products = new List<ProductModel>
+            {
+                new ProductModel
+                {
+                    Id = 1,
+                    Title = "Test",
+                    Image = "Image",
+                },
+            };
+            var dtos = new List<ProductDto>
+            {
+                new ProductDto
+                {
+                    Id = 1,
+                    Title = "Test",
+                    Image = "Image",
+                },
+            };
+
+            _repo
+                .GetProductsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>())
+                .Returns((products, 1));
+            _mapper.Map<List<ProductDto>>(Arg.Any<List<ProductModel>>()).Returns(dtos);
+
+            await serviceWithRealCache.GetPaginatedProductsAsync(queryParams);
+            await _repo
+                .Received(1)
+                .GetProductsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
+
+            await serviceWithRealCache.GetPaginatedProductsAsync(queryParams);
+            await _repo
+                .Received(1)
+                .GetProductsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
+
+            var createDto = new ProductCreateDto { Title = "New", Image = "test.jpg" };
+            var model = new ProductModel { Title = "New", Image = "Image" };
+            _mapper.Map<ProductModel>(createDto).Returns(model);
+            _repo
+                .AddProductAsync(model)
+                .Returns(
+                    new ProductModel
+                    {
+                        Id = 2,
+                        Title = "New",
+                        Image = "Image",
+                    }
+                );
+
+            await serviceWithRealCache.CreateProductAsync(createDto);
+
+            await serviceWithRealCache.GetPaginatedProductsAsync(queryParams);
+            await _repo
+                .Received(2)
+                .GetProductsAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
         }
     }
 }

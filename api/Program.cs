@@ -49,6 +49,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 
+builder.Services.AddMemoryCache();
+
 builder.Host.AddLoggerConfiguration();
 
 var app = builder.Build();
