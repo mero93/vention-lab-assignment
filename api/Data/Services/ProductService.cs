@@ -18,19 +18,20 @@ namespace api.Data.Services
         }
 
         public async Task<PaginatedResult<ProductDto>> GetPaginatedProductsAsync(
-            PaginationParams paginationParams
+            QueryParams parameters
         )
         {
             var (list, totalLength) = await _repository.GetProductsAsync(
-                paginationParams.Take,
-                paginationParams.Skip
+                parameters.Take,
+                parameters.Skip,
+                parameters.Title
             );
 
             return new PaginatedResult<ProductDto>(
                 _mapper.Map<List<ProductDto>>(list),
                 totalLength,
-                paginationParams.PageNumber,
-                paginationParams.PageSize
+                parameters.PageNumber,
+                parameters.PageSize
             );
         }
     }

@@ -6,6 +6,10 @@ namespace api.Data.Repositories
     {
         Task<ProductModel> AddProductAsync(ProductModel data);
 
-        Task<(List<ProductModel> products, int totalLength)> GetProductsAsync(int take, int skip);
+        Task<(List<ProductModel> products, int totalLength)> GetProductsAsync(
+            int take,
+            int skip,
+            string? title = null
+        );
     }
 }

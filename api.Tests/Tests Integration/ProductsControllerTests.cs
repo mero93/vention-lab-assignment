@@ -64,17 +64,21 @@ namespace api.Tests
         }
 
         [Theory]
-        [InlineData(1, 5, 5)]
-        [InlineData(2, 10, 5)]
-        [InlineData(99, 5, 0)]
+        [InlineData(1, 5, null, 5)]
+        [InlineData(2, 10, null, 5)]
+        [InlineData(99, 5, null, 0)]
+        [InlineData(1, 100, "Product-1", 7)]
+        [InlineData(1, 100, "None", 0)]
         public async Task GetProducts_ReturnsWrappedSuccess_WithPagination(
             int page,
             int size,
+            string? title,
             int expectedCount
         )
         {
             var response = await _client.GetAsync(
                 $"/api/products?pageNumber={page}&pageSize={size}"
+                    + (string.IsNullOrWhiteSpace(title) ? "" : $"&title={title}")
             );
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

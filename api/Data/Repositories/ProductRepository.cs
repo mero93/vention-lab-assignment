@@ -23,10 +23,16 @@ namespace api.Data.Repositories
 
         public async Task<(List<ProductModel> products, int totalLength)> GetProductsAsync(
             int take,
-            int skip
+            int skip,
+            string? title = null
         )
         {
-            var query = _context.Products;
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                query = query.Where(p => EF.Functions.Like(p.Title, $"%{title}%"));
+            }
 
             var count = await query.CountAsync();
 

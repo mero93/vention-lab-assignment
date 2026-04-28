@@ -75,7 +75,7 @@ namespace api.Tests
         [Fact]
         public async Task GetProductsAsync_ShouldReturnCorrectPaginationMetadata()
         {
-            var paginationParams = new PaginationParams { PageNumber = 2, PageSize = 10 };
+            var paginationParams = new QueryParams { PageNumber = 2, PageSize = 10 };
             var products = new List<ProductModel>();
             var dtos = new List<ProductDto>();
 

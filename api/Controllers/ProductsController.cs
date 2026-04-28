@@ -12,9 +12,9 @@ namespace api.Controllers
         private readonly IProductService _productService = productService;
 
         [HttpGet]
-        public async Task<ActionResult> GetProducts([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult> GetProducts([FromQuery] QueryParams parameters)
         {
-            var result = await _productService.GetPaginatedProductsAsync(paginationParams);
+            var result = await _productService.GetPaginatedProductsAsync(parameters);
 
             return Ok(result);
         }
