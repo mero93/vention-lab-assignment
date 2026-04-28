@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useState } from 'react';
+import AddProductDialog from './AddProductDialog';
 
 export default function Header() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function Header() {
   const searchParams = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const updateQuery = (query: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -28,6 +31,20 @@ export default function Header() {
   const clearQuery = () => {
     setSearchTerm('');
     updateQuery('');
+  };
+
+  const handleOpenDialog = () => {
+    setIsMounted(true);
+    setTimeout(() => setIsOpen(true), 10);
+  };
+
+  const handleCloseDialog = (open: boolean) => {
+    if (open) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+      setTimeout(() => setIsMounted(false), 300);
+    }
   };
 
   return (
@@ -51,12 +68,18 @@ export default function Header() {
         <h1 className="text-xl">Media Inventory Manager</h1>
 
         <div className="flex items-center gap-9">
-          <Button variant="default" size="lg" className="gap-2 font-bold">
+          <Button
+            variant="default"
+            size="lg"
+            className="gap-2 font-bold"
+            onClick={handleOpenDialog}
+          >
             <PlusCircle className="size-6" />
             Add Product
           </Button>
         </div>
       </div>
+      {isMounted && <AddProductDialog open={isOpen} setOpen={handleCloseDialog} />}
     </header>
   );
 }

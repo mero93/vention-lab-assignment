@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, JetBrains_Mono, Figtree } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' });
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,8 +29,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("dark", geistMono.variable, jetbrainsMono.variable, "font-sans", figtree.variable)} style={{ colorScheme: 'light' }}>
-      <body className="bg-greyscale-100 flex min-h-full flex-col">
+    <html
+      lang="en"
+      className={cn(
+        'dark',
+        geistSans.variable,
+        geistMono.variable,
+        jetbrainsMono.variable,
+        'font-sans',
+        figtree.variable,
+      )}
+      style={{ colorScheme: 'dark' }}
+    >
+      <body className="bg-gray-200 flex min-h-full flex-col">
         <Header />
         {children}
       </body>
