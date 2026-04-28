@@ -1,22 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using api.Data;
 using api.Data.DTOs;
 using api.Data.Models;
 using api.Data.Responses;
-using api.Errors;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace api.Tests
 {

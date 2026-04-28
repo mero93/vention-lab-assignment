@@ -1,11 +1,10 @@
 using api.Data;
 using api.Data.Repositories;
+using api.Data.Seed;
 using api.Data.Services;
-using api.Data.Validators;
 using api.Errors;
 using api.Extensions;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -78,6 +77,11 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<AppDbContext>();
         await context.Database.EnsureCreatedAsync();
+
+        if (app.Environment.IsDevelopment())
+        {
+            Seeder.Seed(context);
+        }
     }
     catch (Exception ex)
     {

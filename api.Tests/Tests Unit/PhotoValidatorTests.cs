@@ -1,4 +1,3 @@
-using api.Data.DTOs;
 using api.Data.Validators;
 using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Http;

@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Data.DTOs;
 using api.Data.Models;
 using api.Data.Repositories;
 using api.Data.Services;
 using AutoMapper;
 using NSubstitute.ExceptionExtensions;
-using Xunit;
 
 namespace api.Tests
 {

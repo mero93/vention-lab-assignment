@@ -87,7 +87,7 @@ export default function AddProductDialog({ open, setOpen }: Readonly<LoginDialog
             />
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={validating}>
                 Cancel
               </Button>
               <Button type="submit" variant="info" disabled={!isValid || isSubmitting}>
