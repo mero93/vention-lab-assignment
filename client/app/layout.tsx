@@ -36,14 +36,14 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         jetbrainsMono.variable,
-        'font-sans',
         figtree.variable,
+        'font-sans',
       )}
       style={{ colorScheme: 'dark' }}
     >
-      <body className="bg-gray-200 flex min-h-full flex-col">
+      <body className="bg-background text-foreground flex min-h-screen flex-col antialiased">
         <Header />
-        {children}
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );

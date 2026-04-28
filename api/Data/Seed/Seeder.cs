@@ -10,7 +10,7 @@ public static class Seeder
         if (context.Products.Any())
             return;
 
-        var stockImages = Enumerable.Range(1, 6).Select(id => $"stock-{id + 1}.webp").ToList();
+        var stockImages = Enumerable.Range(1, 6).Select(id => $"stock-{id}.webp").ToList();
 
         var productFaker = new Faker<ProductModel>()
             .RuleFor(p => p.Title, f => f.Commerce.ProductName())
