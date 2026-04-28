@@ -14,6 +14,9 @@ import CustomImageInput from './CustomImageInput';
 import { AddProduct, AddProductSchema } from '@/types/schemas/add-product-schema';
 import { CustomInput } from './CustomInput';
 import { useEffect, useState } from 'react';
+import { createProduct, uploadImage } from '@/lib/api';
+import { Product } from '@/types/product';
+import { useRouter } from 'next/navigation';
 
 type LoginDialogProperties = {
   open: boolean;
@@ -30,30 +33,45 @@ export default function AddProductDialog({ open, setOpen }: Readonly<LoginDialog
     },
   });
 
+  const router = useRouter();
+
   const [validating, setValidating] = useState(false);
 
   const {
     handleSubmit,
+    reset,
+    resetField,
     formState: { isSubmitting, isValid },
   } = methods;
 
-  const onSubmit = async (data: AddProduct) => {
+  const onSubmit = async (formData: AddProduct) => {
     try {
       setValidating(true);
-      console.log('Form Data:', data);
 
-      const formData = new FormData();
-      formData.append('title', data.title);
-      if (data.description) formData.append('description', data.description);
-      if (data.image instanceof File) {
-        formData.append('image', data.image);
+      const uploadResult = await uploadImage(formData.image);
+
+      if (uploadResult.error || !uploadResult.data) {
+        resetField('image');
+        return;
       }
 
-      // await productService.addProduct(formData)
+      const product: Omit<Product, 'id'> = {
+        title: formData.title,
+        description: formData.description ?? undefined,
+        image: uploadResult.data.fileName,
+      };
 
+      const { data, error } = await createProduct(product);
+
+      if (error || !data) {
+        reset();
+        return;
+      }
+
+      router.refresh();
       setOpen(false);
-    } catch (error) {
-      console.error('Failed to add product', error);
+    } catch {
+      reset();
     } finally {
       setValidating(false);
     }
@@ -87,7 +105,12 @@ export default function AddProductDialog({ open, setOpen }: Readonly<LoginDialog
             />
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={validating}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={validating}
+              >
                 Cancel
               </Button>
               <Button type="submit" variant="info" disabled={!isValid || isSubmitting}>

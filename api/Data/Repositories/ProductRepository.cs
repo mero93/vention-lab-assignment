@@ -37,7 +37,11 @@ namespace api.Data.Repositories
 
             var count = await query.CountAsync();
 
-            var products = await query.OrderBy(p => p.Id).Skip(skip).Take(take).ToListAsync();
+            var products = await query
+                .OrderByDescending(p => p.Id)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
 
             return (products, count);
         }
